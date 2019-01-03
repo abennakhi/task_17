@@ -1,4 +1,7 @@
 from restaurants.models import Restaurant
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
+from .permissions import IsOwner
+
 from rest_framework.generics import (
     ListAPIView,
     RetrieveAPIView,
@@ -26,6 +29,7 @@ class RestaurantDetailView(RetrieveAPIView):
 
 class RestaurantCreateView(CreateAPIView):
     serializer_class = RestaurantCreateUpdateSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -35,6 +39,7 @@ class RestaurantUpdateView(RetrieveUpdateAPIView):
     serializer_class = RestaurantCreateUpdateSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'restaurant_id'
+    permission_classes = [ IsOwner]
 
 
 class RestaurantDeleteView(DestroyAPIView):
@@ -42,3 +47,4 @@ class RestaurantDeleteView(DestroyAPIView):
     serializer_class = RestaurantListSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'restaurant_id'
+    permission_classes = [IsAdminUser]
